@@ -1,0 +1,15 @@
+name: SavingList
+region: eu-west-3
+cloudProvider: aws
+sdk:
+  language: ts
+  path: ../client/src/sdk
+scripts:
+  preBackendDeploy: npm install
+  preFrontendDeploy: cd ../client && npm install && npm run build
+frontend:
+  path: ../client/build
+classes:  
+  - path: itemsDB.ts
+    type: jsonrpc
+    methods: []
