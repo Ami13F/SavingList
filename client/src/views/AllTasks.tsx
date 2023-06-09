@@ -53,7 +53,7 @@ export default function AllTasks() {
         }
       }
     );
-  }, [category]);
+  }, [category, taskTitle]);
 
   async function handleAdd(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -75,11 +75,10 @@ export default function AllTasks() {
   }
 
   async function handleDone(id: string, done: boolean) {
-    console.log("item id: ", id);
+    console.log("Client - item id: ", id, done);
     const res = await ShoppingListDB.updateItem(id, done);
     if (res.success) {
       setTaskTitle("");
-      toggleModalAddTask();
     }
   }
 
@@ -134,9 +133,11 @@ export default function AllTasks() {
                     <div key={task._id} className="mb-3">
                       <p className="mb-0">
                         <Checkbox
-                          onChange={(_, i) => handleDone(task._id, i)}
+                          onChange={(e, i) => {
+                            handleDone(task._id, i);
+                            e.target.checked = i;
+                          }}
                           name="done"
-                          checked={task.done}
                         />
                         <span className="h4">{task.name}</span> -{" "}
                       </p>
@@ -149,9 +150,11 @@ export default function AllTasks() {
                     <div key={task._id} className="mb-3">
                       <p className="mb-0">
                         <Checkbox
-                          onChange={(_, i) => handleDone(task._id, i)}
+                          onChange={(e, i) => {
+                            handleDone(task._id, i);
+                            e.target.checked = i;
+                          }}
                           name="done"
-                          checked={task.done}
                         />
                         <span className="h4">{task.name}</span> -{" "}
                       </p>
@@ -164,9 +167,11 @@ export default function AllTasks() {
                     <div key={task._id} className="mb-3">
                       <p className="mb-0">
                         <Checkbox
-                          onChange={(_, i) => handleDone(task._id, i)}
+                          onChange={(e, i) => {
+                            handleDone(task._id, i);
+                            e.target.checked = i;
+                          }}
                           name="done"
-                          checked={task.done}
                         />
                         <span className="h4">{task.name}</span> -{" "}
                       </p>

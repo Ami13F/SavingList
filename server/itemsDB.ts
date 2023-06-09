@@ -5,8 +5,8 @@ import { ShoppingItem } from './models/item';
 export type ItemType = {
   _id: string,
   success: boolean,
-  name: String,
-  category: String,
+  name: string,
+  category: string,
   done: boolean
 }
 
@@ -23,20 +23,17 @@ export type SolveTaskResponse = {
   success: boolean,
 }
 
-let backupListItems:Map<string, ItemType> 
+let backupListItems: Map<string, ItemType>
+export const MONGO_DB_URI = "mongodb+srv://genezio:genezio@cluster0.c6qmwnq.mongodb.net/?retryWrites=true&w=majority"
 
 export class ShoppingListDB {
   private mongoServer: MongoMemoryServer;
   private connection: mongoose.Connection;
 
-  constructor() { }
+  constructor() { this.connect() }
 
   async connect(): Promise<void> {
-    this.mongoServer = new MongoMemoryServer();
-    const mongoUri = "mongodb+srv://genezio:genezio@cluster0.c6qmwnq.mongodb.net/?retryWrites=true&w=majority"
-    //await this.mongoServer.getUri();
-
-    await mongoose.createConnection(mongoUri).asPromise();
+    mongoose.connect(MONGO_DB_URI);
   }
 
   async disconnect(): Promise<void> {
@@ -45,18 +42,26 @@ export class ShoppingListDB {
   }
 
   async addItem(name: string, category: 'Today' | 'Soon' | 'Long term', done: boolean): Promise<GetItemResponse> {
-    const item = { _id: "id" + Math.random().toString(16).slice(2), success: true, name: name, category: category, done: done }
-    console.log("Add item: ",item._id, name, category, done)
-    // backupListItems.set(item._id, item)
+    const id = "id" + Math.random().toString(16).slice(2);
+    const item = await ShoppingItem.create({
+      _id: id,
+      success: true, name: name, category: category, done: done
+    }) 
+    console.log("Add item: ", item._id, name, category, done)
     return {
       success: true,
-      item: item
+      item: {
+        _id: id,
+        category: item.category,
+        name: item.name,
+        done: !!item.done ?? false,
+        success: true
+      }
     };
   }
 
   async updateItem(id: string, done: boolean): Promise<SolveTaskResponse> {
-    console.log("Update item with: ",id, done)
-    // backupListItems.set(id, backupListItems.get(id)!)
+    console.log("Update item with: ", id, done)
     await ShoppingItem.updateOne(
       { _id: id },
       {
@@ -76,7 +81,7 @@ export class ShoppingListDB {
       done: !!item.done ?? false,
       success: true
     }))
-    
+    console.log("Server - getAllItems: ", listOfItems)
     return { success: true, items: listOfItems };
   }
 
